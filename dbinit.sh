@@ -1,9 +1,9 @@
-screen -dmS exx1 node db.js 3551
-screen -dmS exx2 node db.js 3552
-screen -dmS exx3 node db.js 3553
-screen -dmS exx4 node db.js 3554
-screen -dmS exx5 node db.js 3555
-screen -dmS exx6 node db.js 3556
-screen -dmS exx7 node db.js 3557
-screen -dmS exx8 node db.js 3558
+screen -dmS exx1 node bin/www 3551
+screen -dmS exx2 node bin/www 3552
+screen -dmS exx3 node bin/www 3553
+screen -dmS exx4 node bin/www 3554
+screen -dmS exx5 node bin/www 3555
+screen -dmS exx6 node bin/www 3556
+screen -dmS exx7 node bin/www 3557
+screen -dmS exx8 node bin/www 3558
 screen -dmS git-fan2c node git-notify.js 9788

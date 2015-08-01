@@ -1,10 +1,12 @@
 "use strict";
 var basePath = "/2015/export?JSON=1&",
-  LOBJ = { L: L },
   reg1 = /[{}"]/g,
   reg2 = /\:/g,
-  reg3 = /\,/g;
+  reg3 = /\,/g,
+  L = require("./league").L,
+  LOBJ = { L: L };
 module.exports = {
+  L: L,
   host: "football30.myfantasyleague.com",
   headers: {
     'Content-Type': 'application/json'

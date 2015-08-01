@@ -10,9 +10,11 @@ var http = require('http');
 var data = require('./data');
 var db = require('./db');
 
-data.refresh(function( data ) {
-  db.push(data.players.player, function ( res ) {
-    console.log(res);
+data.refresh("players", null, function( typeStr, data ) {
+  db.push(typeStr, data, function () {
+    db.pullAll(typeStr, function ( dbRes ) {
+      console.log(dbRes);
+    });
   });
 });
 

@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var api = require('../remote-api'); // <-- keeps the URL and league ID handy
+var api = require('../remote-api');
 
-/* GET users listing. */
-router.get('/me', function(req, res, next) {
-  res.send("yeah - " + api);
+router.get('/me', function( req, res ) {
+  res.send("yeah - userssssssss");
 });
 
 module.exports = router;

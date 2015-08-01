@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+"use strict";
 /**
  * Module dependencies.
  */
@@ -7,6 +7,14 @@
 var app = require('../app');
 var debug = require('debug')('fan2c:server');
 var http = require('http');
+var data = require('./data');
+var db = require('./db');
+
+data.refresh(function( data ) {
+  db.push(data.players.player, function ( res ) {
+    console.log(res);
+  });
+});
 
 /**
  * Get port from environment and store in Express.

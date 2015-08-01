@@ -11,8 +11,10 @@ module.exports = {
       var col = db.collection(typeStr);
       var chunk;
       while ( ( chunk = innerArray.slice(0, 1000) ).length > 0 ) {
-        col.insertMany(chunk, function ( err, res ) {
-          console.log(err || res);
+        col.insertMany(chunk, function ( err ) {
+          if ( err ) {
+            console.error(err);
+          }
           if ( chunk == innerArray ) {
             db.close();
             callback();
@@ -23,14 +25,12 @@ module.exports = {
     });
   },
   pullAll: function ( typeStr, callback ) {
-    mongo.connect(url, function ( db ) {
-      var docs = db.collection(typeStr).find();
-      var i = 0;
-      docs.each(function ( err ) {
-        console.log(err || i++);
+    mongo.connect(url, function ( err, db ) {
+      var docs = db.collection(typeStr);
+      docs.find({}).toArray(function ( err, docs ) {
+        callback(docs);
+        db.close();
       });
-      db.close();
-      callback(docs.length + " should equal this: " + i);
     });
   }
 };

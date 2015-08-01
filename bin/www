@@ -9,14 +9,26 @@ var debug = require('debug')('fan2c:server');
 var http = require('http');
 var data = require('./data');
 var db = require('./db');
+var api = require("../remote-api");
 
-data.refresh("players", null, function( typeStr, data ) {
-  db.push(typeStr, data, function () {
-    db.pullAll(typeStr, function ( dbRes ) {
-      console.log(dbRes);
+db.pullAll("players", function ( dbRes ) {
+  if ( dbRes ) {
+    api.players = dbRes;
+  }
+  else {
+    data.refresh("players", null, function( typeStr, data ) {
+      db.push(typeStr, data, function () {
+        db.pullAll(typeStr, function ( dbRes ) {
+          if ( dbRes ) {
+            api.players = dbRes;
+            console.log(dbRes);
+          }
+        });
+      });
     });
-  });
+  }
 });
+
 
 /**
  * Get port from environment and store in Express.

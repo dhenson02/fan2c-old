@@ -20,7 +20,7 @@ module.exports = {
       });
     });
     req.on("error", function ( error ) {
-      console.log(error);
+      console.error(error);
     });
     req.end();
   }

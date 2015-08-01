@@ -11,17 +11,17 @@ var data = require('./data');
 var db = require('./db');
 var api = require("../remote-api");
 
-db.pullAll("players", function ( dbRes ) {
-  if ( dbRes ) {
-    api.players = dbRes;
+db.pullAll("players", function ( docs ) {
+  if ( docs ) {
+    api.players = docs;
   }
   else {
     data.refresh("players", null, function( typeStr, data ) {
       db.push(typeStr, data, function () {
-        db.pullAll(typeStr, function ( dbRes ) {
-          if ( dbRes ) {
-            api.players = dbRes;
-            console.log(dbRes);
+        db.pullAll(typeStr, function ( docs ) {
+          if ( docs ) {
+            api.players = docs;
+            console.log(api.players);
           }
         });
       });

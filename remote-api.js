@@ -21,7 +21,7 @@ module.exports = {
     return basePath + params;
   },
   types: {
-    players: [ { DETAILS: 1 }, "player" ],
+    players: [ {}, "player" ],
     injuries: [ function (W) { return (W) ? {W: W} : {}; }, "injury" ],
     nflSchedule: [ function (W) { return (W) ? {W: W} : {}; }, "matchup" ],
     adp: [ { FRANCHISES: 10, IS_MOCK: 0, IS_PPR: 1 }, "player" ],

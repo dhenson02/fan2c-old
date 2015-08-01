@@ -9,7 +9,8 @@ router.get('/', function ( req, res ) {
 router.get('/nbw/:q', function ( req, res ) {
   var typeStr = req.params.q;
   console.log(typeStr);
-  res.send(api.players);
+  res.render('index', { title: "Ballin", data: api.players });
+  //res.send(api.players);
 });
 
 module.exports = router;

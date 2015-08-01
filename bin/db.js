@@ -11,13 +11,10 @@ module.exports = {
       var col = db.collection(typeStr);
       var chunk;
       while ( ( chunk = innerArray.slice(0, 1000) ).length > 0 ) {
-        col.insertMany(chunk, function ( err ) {
-          if ( err ) {
-            console.error(err);
-          }
+        col.insertMany(chunk, function ( res ) {
+          callback(res);
           if ( chunk == innerArray ) {
             db.close();
-            callback();
           }
         });
         innerArray = innerArray.slice(1000);

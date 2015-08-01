@@ -7,5 +7,27 @@
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <table>
+      <thead>
+      <th>Position</th>
+      <th>Name</th>
+      <th>Team</th>
+      </thead>
+      <tbody>
+        <% var i = 0,
+        t = data.length,
+        regPos = /TM\w*|Off|DL|DB|LB|CB|OL|MLB|DE|RT|RG|LG|LT|C|S|SS|FS|DB/gi;
+           for ( ; i < t; ++i ) {
+             if ( regPos.test(data[i]["position"]) ) {
+              continue;
+             } %>
+              <tr data-id="<%= data[i]["id"] %>">
+              <td><%= data[i]["position"] || "N/A" %></td>
+              <td><%= data[i]["name"] || "N/A" %></td>
+              <td><%= data[i]["team"] || "N/A" %></td>
+              </tr>
+           <% } %>
+         </tbody>
+       </table>
   </body>
 </html>

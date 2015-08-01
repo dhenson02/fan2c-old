@@ -16,8 +16,9 @@
       <tbody>
         <% var i = 0,
         t = data.length,
-        regPos = /TM\w*|Off|DL|DB|LB|CB|OL|MLB|DE|RT|RG|LG|LT|C|S|SS|FS|DB/gi;
-           for ( ; i < t; ++i ) {
+        regPos = /TM\w*|Off|DL|DB|LB|CB|OL|MLB|DE|RT|RG|LG|LT|C|S|SS|FS|DB/gi; %>
+        <caption><%= t %> total rows </caption>
+        <% for ( ; i < t; ++i ) {
              if ( regPos.test(data[i]["position"]) ) {
               continue;
              } %>

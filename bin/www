@@ -12,7 +12,7 @@ var db = require('./db');
 var api = require("../remote-api");
 
 db.pullAll("players", function ( docs ) {
-  if ( docs ) {
+  if ( docs && docs.length > 1) {
     api.players = docs;
   }
   else {

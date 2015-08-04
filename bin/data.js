@@ -1,9 +1,9 @@
-"use strict";
-var api = require('../remote-api');
+var api = require('./remote-api');
 var http = require('http');
 
 module.exports = {
   refresh: function ( typeStr, argObj, callback ) {
+    console.log("refreshing from outside source");
     var req = http.request({
       host: api.host,
       port: api.port,

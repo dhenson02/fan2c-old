@@ -1,11 +1,12 @@
-"use strict";
 var basePath = "/2015/export?JSON=1&",
   reg1 = /[{}"]/g,
   reg2 = /\:/g,
   reg3 = /\,/g,
   L = require("./league").L,
   LOBJ = { L: L };
+
 module.exports = {
+  data: {},
   L: L,
   host: "football30.myfantasyleague.com",
   headers: {

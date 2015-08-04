@@ -9,22 +9,7 @@ var debug = require('debug')('fan2c:server');
 var http = require('http');
 var data = require('./data');
 var db = require('./db');
-var api = require("../remote-api");
-
-db.pullAll("players", function ( docs ) {
-  if ( docs && docs.length > 1) {
-    api.players = docs;
-  }
-  else {
-    data.refresh("players", null, function( typeStr, data ) {
-      api.players = data[typeStr][api.types[typeStr][1]];
-      db.push(typeStr, data, function () {
-
-      });
-    });
-  }
-});
-
+var api = require("./remote-api");
 
 /**
  * Get port from environment and store in Express.
@@ -38,6 +23,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var io = require("socket.io")(server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -106,3 +92,94 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+io.on("connection", function ( socket ) {
+  console.log("socket connection made");
+
+  clientPull(["players", "adp"], function ( data ) {
+    console.log(typeof data);
+    socket.emit("init", data);
+    console.log("init", data);
+  });
+
+  socket.on("client-pull", function ( name ) {
+    console.log("client-pull");
+    clientPull(name, function ( data ) {
+      socket.emit("data-send", data);
+      console.log("data-send");
+    });
+  });
+
+  socket.on("disconnect", function () {
+    console.log("...and it's over");
+  });
+});
+
+io.on("data-change", function ( data ) {
+  io.emit("data-send", data);
+});
+
+function clientPull ( name, callback ) {
+  if ( Array.isArray(name) ) {
+    name.map(function ( nameStr, i ) {
+      db.pullAll(nameStr, function ( docs ) {
+        if ( docs && docs.length > 1) {
+          api.data[nameStr] = docs;
+          console.log("top positive" + i);
+          if ( i < 1 ) {
+            callback(api.data);
+            console.log("callback - send data to browser");
+          }
+        }
+        else {
+          data.refresh(nameStr, null, function( typeStr, data ) {
+            api.data[nameStr] = data[typeStr][api.types[typeStr][1]];
+            db.push(typeStr, data, function () {
+              console.log("end dbPush - " + nameStr);
+            });
+            console.log("top negative");
+          });
+        }
+      });
+    });
+  }
+  else {
+    db.pullAll(name, function ( docs ) {
+      if ( docs && docs.length > 1) {
+        api.data[name] = docs;
+        console.log("bottom positive");
+        callback(api.data[name]);
+      }
+      else {
+        data.refresh(name, null, function( typeStr, data ) {
+          api.data[name] = data[typeStr][api.types[typeStr][1]];
+          db.push(typeStr, data, function () {
+            console.log("end dbPush - " + name);
+          });
+          console.log("bottom negative");
+          callback(api.data[name]);
+        });
+      }
+    });
+  }
+}
+/*
+
+// Repeats every twelve hours
+var echo, shouldUpdate = true;
+var halfDay = setInterval(function () {
+
+  if ( !shouldUpdate ) {
+    clearInterval(echo);
+  }
+  else {
+    echo = setInterval(function () {
+      // Update data every four seconds
+      // ...get data...diff against current...send if new.
+      io.emit("data-change", data);
+    }, 4000);
+  }
+
+  shouldUpdate = !shouldUpdate;
+}, 43200000);
+*/

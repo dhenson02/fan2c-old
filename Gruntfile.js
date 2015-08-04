@@ -1,10 +1,20 @@
 module.exports = function(grunt) {
   grunt.initConfig({
+    babel: {
+      options: {},
+      dist: {
+        files: {
+          'bin/client.js': 'bin/client.src.js',
+          'views/MainView.js': 'views/MainView.src.js',
+          'views/DataView.js': 'views/DataView.src.js'
+        }
+      }
+    },
     browserify: {
       options: {},
       dist: {
         files: {
-          'app.js': ['app.pre.js']
+          '.tmp/client.pre.js': ['bin/client.js', 'views/MainView.js', 'views/DataView.js']
         }
       }
     },
@@ -34,14 +44,13 @@ module.exports = function(grunt) {
             sequences: true,
             cascade: true
           },
-          screwIE8: false,
+          screwIE8: true,
           wrap: false,
           mangle: true,
           sourceMap: false
         },
         files: {
-          'content.min.js': ['content.js'],
-          'app.min.js': ['app.js']
+          'public/scripts/client.js': '.tmp/client.pre.js'
         }
       },
       dev: {
@@ -54,29 +63,31 @@ module.exports = function(grunt) {
           sourceMap: false
         },
         files: {
-          'content.min.js': ['content.js'],
-          'app.min.js': ['app.js']
+          'public/scripts/client.js': '.tmp/client.pre.js'
         }
       }
     },
     purifycss: {
       options: {},
       target: {
-        src: ['manager2b.aspx', 'content.min.js'],
-        css: ['pageview.css'],
-        dest: 'pageview.pure.css'
+        src: ['public/index.html', 'public/scripts/client.js'],
+        css: [
+          'lib/skeleton/css/normalize.css',
+          'lib/skeleton/css/skeleton.css',
+          'views/stylesheets/style.css'
+        ],
+        dest: '.tmp/style.pure.css'
       }
     },
     cssmin: {
       options: {
         roundingPrecision: -1,
-        compatibility: 'ie8',
         processImport: false,
-        keepSpecialComments: 0
+        keepSpecialComments: 1
       },
       dist: {
         files: {
-          'pageview.min.css': 'pageview.pure.css'
+          'public/stylesheets/style.css': '.tmp/style.pure.css'
         }
       }
     },
@@ -94,7 +105,7 @@ module.exports = function(grunt) {
           spawn: false,
           atBegin: false
         },
-        files: ['*.css'],
+        files: ['views/stylesheets/*.css', 'lib/skeleton/css/*.css'],
         tasks: ['purifycss', 'cssmin']
       },
       scripts: {
@@ -103,18 +114,19 @@ module.exports = function(grunt) {
           spawn: false,
           atBegin: true
         },
-        files: ['content.js', 'app.pre.js'],
-        tasks: ['browserify:dist', 'uglify:dev', 'purifycss', 'cssmin']
+        files: ['bin/client.src.js', 'views/*.src.js'],
+        tasks: ['babel:dist', 'browserify:dist', 'uglify:dev', 'purifycss', 'cssmin']
       }
     }
   });
 
+  grunt.loadNpmTasks('grunt-babel');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-purifycss');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', ['browserify:dist', 'uglify:dist', 'purifycss', 'cssmin']);
-  grunt.registerTask('dev', ['browserify:dist', 'uglify:dev', 'purifycss']);
+  grunt.registerTask('default', ['babel:dist', 'browserify:dist', 'uglify:dist', 'purifycss', 'cssmin']);
+  grunt.registerTask('dev', ['babel:dist', 'browserify:dist', 'uglify:dev', 'purifycss', 'cssmin']);
 };

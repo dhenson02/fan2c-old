@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "body-parser": "~1.13.2",
+    "bower": "^1.4.1",
     "browserify": "^11.0.0",
     "cookie-parser": "~1.3.5",
     "cors": "^2.7.1",
@@ -15,16 +16,20 @@
     "express": "~4.13.1",
     "mongodb": "^2.0.39",
     "morgan": "~1.6.1",
+    "react": "^0.13.3",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.3.6",
+    "socket.io-client": "^1.3.6",
     "virtual-dom": "^2.0.1"
   },
   "devDependencies": {
+    "grunt-babel": "^5.0.1",
+    "grunt-browserify": "",
     "grunt-cli": "~0.1.13",
     "grunt-contrib-cssmin": "~0.12.3",
     "grunt-contrib-uglify": "~0.9.1",
-    "grunt-browserify": "",
+    "grunt-contrib-watch": "~0.6.1",
     "grunt-purifycss": "~0.1.0",
-    "grunt-contrib-watch": "~0.6.1"
+    "grunt-react": "^0.12.2"
   }
 }

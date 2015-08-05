@@ -106,3 +106,5 @@ build/Release
 node_modules
 .module-cache
 .tmp
+public/scripts
+public/stylesheets

@@ -108,3 +108,4 @@ node_modules
 .tmp
 public/scripts
 public/stylesheets
+lib

@@ -14,7 +14,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views/old'));
 app.set('view engine', 'ejs');
-app.set('view cache', true);
+//app.set('view cache', true);
 
 app.use(cors());
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

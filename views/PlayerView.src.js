@@ -4,12 +4,12 @@ module.exports = React.createClass({
   handleClick ( event ) {
     event.preventDefault();
     event.stopPropagation();
-    console.log("data-id: " + event.currentTarget.getAttribute("data-id"))
+    console.log("data-id: " + event.currentTarget.getAttribute("data-id"));
   },
 
   render () {
     var self = this;
-    var data = this.props.dataSet.map(function( obj, i ) {
+    var data = self.props.dataSet.map(function( obj, i ) {
       return (
         <li key={i}>
           <a className="button"

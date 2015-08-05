@@ -1,18 +1,23 @@
 "use strict";
 
 var React = require("react");
+var MainView = require("../views/MainView");
+var MainElement = document.getElementById("main");
 var socket = require("socket.io-client")();
-var MainView = require("../views/main");
 
-function pull(typeStr) {
+function handleClick(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  var typeStr = event.target.id;
+  console.log("clicked the big button");
   socket.emit("client-pull", typeStr);
 }
 
-socket.on("init", function (data) {
-  React.render(React.createElement(MainView, { data: data }), document.getElementById("main"));
+socket.on("initialize", function (data) {
+  React.render(React.createElement(MainView, { dataSet: data,
+    handleClick: handleClick.bind(this) }), MainElement);
 });
 
-module.exports = {
-  socket: socket,
-  pull: pull
-};
+socket.on("data-change", function (data) {
+  console.log("data-change:", data);
+});

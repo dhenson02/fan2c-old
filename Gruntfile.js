@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         files: {
           'bin/client.js': 'bin/client.src.js',
           'views/MainView.js': 'views/MainView.src.js',
-          'views/DataView.js': 'views/DataView.src.js'
+          'views/PlayerView.js': 'views/PlayerView.src.js'
         }
       }
     },
@@ -14,7 +14,11 @@ module.exports = function(grunt) {
       options: {},
       dist: {
         files: {
-          '.tmp/client.pre.js': ['bin/client.js', 'views/MainView.js', 'views/DataView.js']
+          '.tmp/client.pre.js': [
+            'bin/client.js',
+            'views/MainView.js',
+            'views/PlayerView.js'
+          ]
         }
       }
     },

@@ -10,6 +10,7 @@ var http = require('http');
 var data = require('./data');
 var db = require('./db');
 var api = require("./remote-api");
+var _ = require("lodash");
 
 /**
  * Get port from environment and store in Express.
@@ -91,24 +92,37 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  db.init(function ( res ) {
+    var name, keys = Object.keys(res);
+    while ( name = keys.shift() ) {
+      if ( res[name].length < 1 ) {
+        // Need to refresh if it's empty.
+        data.refresh(name, null, function ( typeStr, res ) {
+          db.push(typeStr, res, function ( res ) {
+            api.data[typeStr] = res;
+          });
+        });
+      }
+    }
+  });
+
 }
 
 io.on("connection", function ( socket ) {
-  console.log("socket connection made");
-
-  clientPull(["players", "adp"], function ( data ) {
-    console.log(typeof data);
-    socket.emit("init", data);
-    console.log("init", data);
+  if ( _.values(api.data) )
+  db.init(function ( data ) {
+    socket.emit("initialize", data);
+    console.log("initialized");
   });
 
-  socket.on("client-pull", function ( name ) {
+  /*socket.on("client-pull", function ( typeStr ) {
     console.log("client-pull");
-    clientPull(name, function ( data ) {
+    clientPull(typeStr, function ( data ) {
       socket.emit("data-send", data);
       console.log("data-send");
     });
-  });
+  });*/
 
   socket.on("disconnect", function () {
     console.log("...and it's over");
@@ -119,50 +133,6 @@ io.on("data-change", function ( data ) {
   io.emit("data-send", data);
 });
 
-function clientPull ( name, callback ) {
-  if ( Array.isArray(name) ) {
-    name.map(function ( nameStr, i ) {
-      db.pullAll(nameStr, function ( docs ) {
-        if ( docs && docs.length > 1) {
-          api.data[nameStr] = docs;
-          console.log("top positive" + i);
-          if ( i < 1 ) {
-            callback(api.data);
-            console.log("callback - send data to browser");
-          }
-        }
-        else {
-          data.refresh(nameStr, null, function( typeStr, data ) {
-            api.data[nameStr] = data[typeStr][api.types[typeStr][1]];
-            db.push(typeStr, data, function () {
-              console.log("end dbPush - " + nameStr);
-            });
-            console.log("top negative");
-          });
-        }
-      });
-    });
-  }
-  else {
-    db.pullAll(name, function ( docs ) {
-      if ( docs && docs.length > 1) {
-        api.data[name] = docs;
-        console.log("bottom positive");
-        callback(api.data[name]);
-      }
-      else {
-        data.refresh(name, null, function( typeStr, data ) {
-          api.data[name] = data[typeStr][api.types[typeStr][1]];
-          db.push(typeStr, data, function () {
-            console.log("end dbPush - " + name);
-          });
-          console.log("bottom negative");
-          callback(api.data[name]);
-        });
-      }
-    });
-  }
-}
 /*
 
 // Repeats every twelve hours

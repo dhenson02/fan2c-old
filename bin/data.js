@@ -1,22 +1,35 @@
 var api = require('./remote-api');
 var http = require('http');
+var forOwn = require("lodash/object/forOwn");
+var isNaN = require("lodash/lang/isNaN");
+var options = {
+  host: api.host,
+  port: api.port,
+  headers: api.headers,
+  path: null
+};
 
 module.exports = {
   refresh: function ( typeStr, argObj, callback ) {
+    options.path = api.path(typeStr, argObj);
     console.log("refreshing from outside source");
-    var req = http.request({
-      host: api.host,
-      port: api.port,
-      headers: api.headers,
-      path: api.path(typeStr, argObj)
-    }, function ( res ) {
+    var req = http.request(options, function ( res ) {
       var dataStr = "";
       res.on("data", function ( d ) {
         dataStr += d;
       });
       res.on("end", function () {
         var data = JSON.parse(dataStr);
-        callback(typeStr, data);
+        var innerKey = api.types[typeStr][1];
+        var innerArray = data[typeStr][innerKey];
+        innerArray = innerArray.map(function( obj ) {
+          return forOwn(obj, function ( val, key, obj ) {
+            var parsed = Number(val);
+            obj[key] = isNaN(parsed) ? val : parsed;
+            return obj[key];
+          });
+        });
+        callback(typeStr, innerArray);
       });
     });
     req.on("error", function ( error ) {

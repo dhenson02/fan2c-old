@@ -5,23 +5,35 @@ var React = require("react");
 module.exports = React.createClass({
   displayName: "exports",
 
+  handleClick: function handleClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("data-id: " + event.currentTarget.getAttribute("data-id"));
+  },
+
   render: function render() {
     var self = this;
-    var fields = Object.keys(this.props.data);
-    var data = fields.map(function (field, index) {
+    var data = this.props.dataSet.map(function (obj, i) {
       return React.createElement(
         "li",
-        { key: index, "data-id": index },
-        field + ": " + JSON.stringify(self.props.data[index])
+        { key: i },
+        React.createElement(
+          "a",
+          { className: "button",
+            href: "#",
+            "data-id": obj["id"],
+            onClick: self.handleClick },
+          obj["name"]
+        )
       );
     });
     return React.createElement(
       "div",
       null,
-      this.props.title,
+      self.props.title,
       React.createElement(
         "ul",
-        null,
+        { style: { listStyleType: "none" } },
         data
       )
     );

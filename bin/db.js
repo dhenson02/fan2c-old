@@ -1,36 +1,49 @@
 var mongo = require("mongodb").MongoClient;
 var url = "mongodb://localhost:27017/testffl";
 var api = require("./remote-api");
+var where = require("lodash/collection/where");
+var merge = require("lodash/object/merge");
 
 function push ( typeStr, data, callback ) {
-  var innerKey = api.types[typeStr][1];
-  var innerArray = data[typeStr][innerKey];
   mongo.connect(url, function ( err, db ) {
     var col = db.collection(typeStr);
     var chunk;
-    while ( ( chunk = innerArray.slice(0, 1000) ).length > 0 ) {
+    while ( ( chunk = data.slice(0, 1000) ).length > 0 ) {
       col.insertMany(chunk, function ( res ) {
         callback(res);
-        if ( chunk == innerArray ) {
+        if ( chunk == data ) {
           db.close();
         }
       });
-      innerArray = innerArray.slice(1000);
+      data = data.slice(1000);
     }
   });
 }
 
-function pullAll ( typeStr, callback ) {
+function init ( callback ) {
   mongo.connect(url, function ( err, db ) {
-    var docs = db.collection(typeStr);
-    docs.find({}).toArray(function ( err, docs ) {
-      callback(docs);
-      db.close();
+    var players = db.collection("players");
+    var all = {};
+    players.find({}).toArray(function ( err, players ) {
+      var adp = db.collection("adp");
+      all.players = players;
+      adp.find({})
+        .limit(250)
+        .sort({averagePick: 1})
+        .toArray(function ( err, adp ) {
+          var a = 0, total = adp.length;
+          for (; a < total; ++a ) {
+            adp[a] = merge(where(players, { id: adp[a].id }).pop(), adp[a])
+          }
+          all.adp = adp;
+          callback(all);
+          db.close();
+        });
     });
   });
 }
 
 module.exports = {
   push: push,
-  pullAll: pullAll
+  init: init
 };

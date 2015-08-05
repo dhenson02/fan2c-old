@@ -1,33 +1,62 @@
 var React = require("react");
-var PlayerView = require("./PlayerView");
+var PlayersView = require("./PlayersView");
+var LiveScoringView = require("./LiveScoringView");
+var Store = require("./Store");
 
-module.exports = React.createClass({
+var MainView = React.createClass({
   getInitialState () {
     return {
-      players: [],
-      adp: []
+      dataSet: [],
+      view: ""
     }
   },
 
-  componentDidMount () {
-    var players = this.props.dataSet["players"],
-      adp = this.props.dataSet["adp"];
+  handleClick ( event ) {
+    var self = this;
+    event.preventDefault();
+    event.stopPropagation();
+    this.props.onClick( event, function ( typeStr, dataSet ) {
+      self.setState({
+        view: typeStr,
+        dataSet: dataSet
+      });
+    });
+  },
+
+  componentWillMount () {
     this.setState({
-      players: players,
-      adp: adp
+      view: "players"
     });
   },
 
   render () {
+    if ( this.state.view === "liveScoring" ) {
+      var display = "block";
+      var scores = (
+        <LiveScoringView
+          dataSet={this.state.dataSet}
+          title="Live Scoring"
+          style={{display: display}} />
+      );
+    }
+    else {
+      display = "none";
+      scores = <div/>;
+    }
     return (
       <div className="row">
-        <a onClick={this.props.handleClick}
+        <a onClick={this.handleClick}
           href="#"
           className="button button-primary"
-          id="adp">ADP</a>
-        <PlayerView dataSet={this.state.adp} title="Players" />
+          data-target="liveScoring"
+          id="scores-btn">Live Scoring</a>
+        <PlayersView
+          dataSet={Store.adp}
+          title="Players" />
+        {scores}
       </div>
     );
   }
 });
 
+module.exports = MainView;

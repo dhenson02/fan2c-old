@@ -14,34 +14,37 @@ module.exports = {
   },
   path: function ( typeStr, argObj ) {
     var type = this.types[typeStr][0];
-    if ( argObj && "function" === typeof type ) {
+    if ( argObj ) {
       type = type(argObj);
+    }
+    else {
+      type = type();
     }
     type.TYPE = typeStr;
     var params = JSON.stringify(type).replace(reg1, "").replace(reg2, "=").replace(reg3, "&");
     return basePath + params;
   },
   types: {
-    players: [ {}, "player" ],
+    players: [ function () { return {} }, "player" ],
     injuries: [ function (W) { return (W) ? {W: W} : {}; }, "injury" ],
     nflSchedule: [ function (W) { return (W) ? {W: W} : {}; }, "matchup" ],
-    adp: [ { FRANCHISES: 10, IS_MOCK: 0, IS_PPR: 1 }, "player" ],
+    adp: [ function () { return { FRANCHISES: 10, IS_MOCK: 0, IS_PPR: 1 }; }, "player" ],
     topAdds: [ function (W) { return (W) ? {W: W} : {}; }, "player" ],
     topDrops: [ function (W) { return (W) ? {W: W} : {}; }, "player" ],
     topStarters: [ function (W) { return (W) ? {W: W} : {}; }, "player" ],
     topOwns: [ function (W) { return (W) ? {W: W} : {}; }, "player" ],
-    rosters: [ LOBJ, "franchise" ],
-    leagueStandings: [ LOBJ, "franchise" ],
+    rosters: [ function () { return LOBJ; }, "franchise" ],
+    leagueStandings: [ function () { return LOBJ; }, "franchise" ],
     weeklyResults: [ function (W) { return (W) ? {W: W, L: L} : LOBJ; }, "franchise" ],
     liveScoring: [ function (W) { return (W) ? {W: W, L: L, DETAILS: 1} : {L: L, DETAILS: 1}; }, "matchup" ],
     playerScores: [ function (W) { return (W) ? {W: W, L: L} : LOBJ; }, "playerScore" ],
     freeAgents: [ function (obj) { obj = obj || {}; obj.L = L; return obj; }, "player" ],
     projectedScores: [ function (obj) { obj = obj || {}; obj.L = L; return obj; }, "playerScore" ],
-    accounting: [ LOBJ, "entry" ],
-    calendar: [ LOBJ, "event" ],
-    pointsAllowed: [ LOBJ, "team" ],
+    accounting: [ function () { return LOBJ; }, "entry" ],
+    calendar: [ function () { return LOBJ; }, "event" ],
+    pointsAllowed: [ function () { return LOBJ; }, "team" ],
     whoShouldIStart: [ function (obj) { obj = obj || {}; return obj; }, "startBenchPair" ],
-    playoffBrackets: [ LOBJ, "playoffBracket" ]
+    playoffBrackets: [ function () { return LOBJ; }, "playoffBracket" ]
     //playerProfile: [ function (P) { return (P) ? {P: P} : {}; }, "" ], /** Will require its own module **/
     //playerStatus: [ function (P) { return {P: P, L: L}; }, "" ],
     //league: [ LOBJ, "" ], /** Will require its own module **/

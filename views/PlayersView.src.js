@@ -1,17 +1,18 @@
 var React = require("react");
+var Store = require("./Store");
+var players = Store.players;
 
-module.exports = React.createClass({
+var PlayersView = React.createClass({
   handleClick ( event ) {
     event.preventDefault();
     event.stopPropagation();
-    console.log("data-id: " + event.currentTarget.getAttribute("data-id"));
   },
 
   render () {
     var self = this;
     var data = self.props.dataSet.map(function( obj, i ) {
       return (
-        <li key={i}>
+        <li key={i} style={{float: "left"}}>
           <a className="button"
             href="#"
             data-id={obj["id"]}
@@ -19,11 +20,8 @@ module.exports = React.createClass({
         </li>
       )
     });
-    return (
-      <div>
-        {self.props.title}
-        <ul style={{listStyleType: "none" }}>{data}</ul>
-      </div>
-    );
+    return <ul className="twelve columns" style={{listStyleType: "none" }}>{data}</ul>;
   }
 });
+
+module.exports = PlayersView;

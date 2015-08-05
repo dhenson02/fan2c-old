@@ -93,29 +93,37 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 
-  db.init(function ( res ) {
-    var name, keys = Object.keys(res);
-    while ( name = keys.shift() ) {
-      if ( res[name].length < 1 ) {
-        // Need to refresh if it's empty.
-        data.refresh(name, null, function ( typeStr, res ) {
-          db.push(typeStr, res, function ( res ) {
-            api.data[typeStr] = res;
+  data.refresh("league", null, function ( typeStr, settings ) {
+    console.log(settings);
+    api.data["league"] = settings;
+    db.init(function ( res ) {
+      var name, keys = Object.keys(res);
+      while ( name = keys.shift() ) {
+        if ( res[name].length < 1 ) {
+          // Need to refresh if it's empty.
+          data.refresh(name, null, function ( type, dataSet ) {
+            api.data[type] = dataSet;
+            db.pushPlayers(type, dataSet, function ( dataSet ) {});
           });
-        });
+        }
+        else {
+          api.data[name] = res[name];
+        }
       }
-    }
+    });
   });
-
 }
 
-io.on("connection", function ( socket ) {
-  if ( _.values(api.data) )
-  db.init(function ( data ) {
-    socket.emit("initialize", data);
-    console.log("initialized");
-  });
+var activeUsers = {};
 
+io.on("connection", function ( socket ) {
+  if ( !api.data.league || !api.data.players ) {
+    /*db.init(function ( data ) {
+      socket.emit("initialize", data);
+      console.log("initialized");
+    });*/
+  }
+  socket.emit("initialize", api.data);
   /*socket.on("client-pull", function ( typeStr ) {
     console.log("client-pull");
     clientPull(typeStr, function ( data ) {
@@ -124,8 +132,36 @@ io.on("connection", function ( socket ) {
     });
   });*/
 
+  socket.on("client-pull", function ( typeStr, callback ) {
+    activeUsers[socket.id] = { timestamp: new Date() };
+    console.log("current score watchers: ", activeUsers);
+    console.log("typeStr: " + typeStr);
+    if ( typeStr === "liveScoring" ) {
+      db.pull("rosters", function ( rosters ) {
+        data.refresh(typeStr, null, function ( typeStr, dataSet ) {
+          //var a = 0, total = dataSet.length;
+          //for ( ; a < total; ++a ) {
+            /*dataSet[a] = _.merge(
+              _.where(rosters, { id: dataSet[a].id }).pop(),
+              dataSet[a]
+            );*/
+            /*dataSet[a] = _.merge(
+             _.where(api.data["players"], { id: dataSet[]})
+             )*/
+          //}
+          console.log(dataSet, rosters);
+          callback(typeStr, dataSet);
+        });
+      });
+    }
+  });
+
   socket.on("disconnect", function () {
-    console.log("...and it's over");
+    if ( activeUsers[socket.id] ) {
+      delete activeUsers[socket.id];
+    }
+    console.log("user disconnect");
+    console.log("current score watchers: ", activeUsers);
   });
 });
 

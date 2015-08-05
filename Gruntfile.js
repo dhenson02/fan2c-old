@@ -6,7 +6,8 @@ module.exports = function(grunt) {
         files: {
           'bin/client.js': 'bin/client.src.js',
           'views/MainView.js': 'views/MainView.src.js',
-          'views/PlayerView.js': 'views/PlayerView.src.js'
+          'views/PlayersView.js': 'views/PlayersView.src.js',
+          'views/LiveScoringView.js': 'views/LiveScoringView.src.js'
         }
       }
     },
@@ -17,7 +18,9 @@ module.exports = function(grunt) {
           '.tmp/client.pre.js': [
             'bin/client.js',
             'views/MainView.js',
-            'views/PlayerView.js'
+            'views/PlayersView.js',
+            'views/LiveScoringView.js',
+            'views/Store.js'
           ]
         }
       }
@@ -118,7 +121,7 @@ module.exports = function(grunt) {
           spawn: false,
           atBegin: true
         },
-        files: ['bin/client.src.js', 'views/*.src.js'],
+        files: ['bin/client.src.js', 'views/*.src.js', 'views/Store.js'],
         tasks: ['babel:dist', 'browserify:dist', 'uglify:dev', 'purifycss', 'cssmin']
       }
     }

@@ -1,8 +1,7 @@
 var mongo = require("mongodb").MongoClient;
 var url = "mongodb://localhost:27017/testffl";
 var api = require("./remote-api");
-var where = require("lodash/collection/where");
-var merge = require("lodash/object/merge");
+var _ = require("lodash");
 
 function push ( typeStr, data, callback ) {
   mongo.connect(url, function ( err, db ) {
@@ -33,7 +32,10 @@ function init ( callback ) {
         .toArray(function ( err, adp ) {
           var a = 0, total = adp.length;
           for (; a < total; ++a ) {
-            adp[a] = merge(where(players, { id: adp[a].id }).pop(), adp[a])
+            adp[a] = _.merge(
+              _.where(players, { id: adp[a].id }).pop(),
+              adp[a]
+            );
           }
           all.adp = adp;
           callback(all);

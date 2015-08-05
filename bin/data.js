@@ -1,7 +1,6 @@
 var api = require('./remote-api');
 var http = require('http');
-var forOwn = require("lodash/object/forOwn");
-var isNaN = require("lodash/lang/isNaN");
+var _ = require("lodash");
 var options = {
   host: api.host,
   port: api.port,
@@ -23,9 +22,9 @@ module.exports = {
         var innerKey = api.types[typeStr][1];
         var innerArray = data[typeStr][innerKey];
         innerArray = innerArray.map(function( obj ) {
-          return forOwn(obj, function ( val, key, obj ) {
+          return _.forOwn(obj, function ( val, key, obj ) {
             var parsed = Number(val);
-            obj[key] = isNaN(parsed) ? val : parsed;
+            obj[key] = _.isNaN(parsed) ? val : parsed;
             return obj[key];
           });
         });

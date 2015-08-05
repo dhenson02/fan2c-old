@@ -1,0 +1,26 @@
+{
+  "name": "fan2c",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dhenson02/fan2c",
+  "authors": [
+    "Deryck Henson <deryck.henson@gmail.com>"
+  ],
+  "main": "bin/www",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "skeleton": "dhg/Skeleton#~2.0.4",
+    "animate.css": "daneden/animate.css#~3.3.1",
+    "react": "~0.13.3"
+  }
+}

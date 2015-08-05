@@ -13,7 +13,7 @@ module.exports = React.createClass({
 
   render: function render() {
     var self = this;
-    var data = this.props.dataSet.map(function (obj, i) {
+    var data = self.props.dataSet.map(function (obj, i) {
       return React.createElement(
         "li",
         { key: i },
